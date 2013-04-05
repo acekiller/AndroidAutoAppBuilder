@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import pl.radomski.autobuilder.view.data.ViewData;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -29,6 +30,11 @@ public class GridData extends ViewData {
 			JSONObject innerObject = jsonArray.getJSONObject(i);
 			addText(innerObject.getString("text"));
 		}
+	}
+
+	@Override
+	public long insertToDb(SQLiteDatabase db) {
+		return 0;
 	}
 
 	public ArrayList<String> getTexts() {
@@ -66,4 +72,5 @@ public class GridData extends ViewData {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeStringList(texts);
 	}
+
 }

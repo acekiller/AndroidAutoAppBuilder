@@ -4,7 +4,7 @@ import pl.radomski.autobuilder.R;
 import pl.radomski.autobuilder.layout.FrameLayout;
 import android.os.Bundle;
 
-public class FrameActivity extends KrwiodawcaActivity {
+public class FrameActivity extends EasyActivity {
 
 	public static final String TAG = FrameActivity.class.getSimpleName();
 

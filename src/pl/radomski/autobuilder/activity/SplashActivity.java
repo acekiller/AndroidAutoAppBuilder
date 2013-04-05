@@ -10,6 +10,8 @@ import pl.radomski.autobuilder.R;
 import pl.radomski.autobuilder.utils.AndroidUtils;
 import pl.radomski.autobuilder.utils.ResourceDownloader;
 import pl.radomski.autobuilder.view.data.ApplicationDescriptionData;
+import pl.radomski.autobuilder.view.data.ViewDescriptionData;
+import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -17,7 +19,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class SplashActivity extends KrwiodawcaActivity {
+public class SplashActivity extends EasyActivity {
 	private int sleepTime = 200;
 
 	@Override
@@ -39,11 +41,31 @@ public class SplashActivity extends KrwiodawcaActivity {
 			try {
 				String string = ResourceDownloader.getStringFromUrl("http://10.0.2.2/~adam/plik.json");
 				applicationDescriptionData = ApplicationDescriptionData.createFromJson(new JSONObject(string));
+				ContentValues contentValues;
+				for (ViewDescriptionData descriptionData : applicationDescriptionData.getDescriptionDatas()) {
+					contentValues = descriptionData.getHeaderData().getContentValues();
+
+					System.out.println(contentValues);
+				}
+
+				//
+				// DatabaseOpenHelper databaseOpenHelper = new
+				// DatabaseOpenHelper(SplashActivity.this);
+				// SQLiteDatabase db = databaseOpenHelper.getWritableDatabase();
+				// db.beginTransaction();
+				// // db.insert(table, nullColumnHack, values);
+				// applicationDescriptionData.getDescriptionDatas().get(0).getFooterData().insertToDb(db);
+				// db.insert(table, nullColumnHack, values);
+
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 			return applicationDescriptionData;

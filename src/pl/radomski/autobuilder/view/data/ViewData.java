@@ -1,9 +1,16 @@
 package pl.radomski.autobuilder.view.data;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import pl.radomski.autobuilder.annotations.ContentValue;
 import pl.radomski.autobuilder.view.IdViewMatcher;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
 
 public abstract class ViewData implements Parcelable {
@@ -33,6 +40,8 @@ public abstract class ViewData implements Parcelable {
 
 	public abstract void fillWithJson(JSONObject jsonObject) throws JSONException;
 
+	public abstract long insertToDb(SQLiteDatabase db);
+
 	private static ViewData resolveHeader(JSONObject jsonObject, int viewId) throws JSONException {
 		ViewData data = IdViewMatcher.matchHeader(viewId);
 		data.fillWithJson(jsonObject);
@@ -51,4 +60,44 @@ public abstract class ViewData implements Parcelable {
 		return data;
 	}
 
+	public ContentValues getContentValues() throws IllegalArgumentException, IllegalAccessException {
+		ArrayList<Field> fields = new ArrayList<Field>();
+		for (Field field : getClass().getDeclaredFields()) {
+			Annotation[] annotations = field.getDeclaredAnnotations();
+			for (Annotation annotation : annotations) {
+				if (annotation instanceof ContentValue) {
+					fields.add(field);
+				}
+			}
+		}
+		ContentValues contentValues = new ContentValues();
+
+		for (Field field : fields) {
+			boolean accesible = field.isAccessible();
+			if (!accesible) {
+				field.setAccessible(true);
+			}
+			Class type = field.getType();
+			String keyName = field.getAnnotation(ContentValue.class).valueName();
+			if (keyName.length() == 0) {
+				keyName = field.getName();
+			}
+
+			if (type == String.class || type.equals(String.class)) {
+				contentValues.put(keyName, (String) field.get(this));
+			} else
+
+			if (type.equals(Integer.class) || type.equals(Integer.TYPE) || type.equals(Integer.class)
+					|| type.equals(int.class) || type == Integer.class || type == Integer.TYPE || type == Integer.class
+					|| type == int.class) {
+				contentValues.put(keyName, field.getInt(this));
+			}
+			field.setAccessible(accesible);
+		}
+
+		// Class type = field.getType();
+		// String name = field.getName();
+
+		return contentValues;
+	}
 }

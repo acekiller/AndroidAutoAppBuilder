@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import pl.radomski.autobuilder.view.data.ViewData;
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -30,6 +30,11 @@ public class FooterData extends ViewData {
 		setTitle(jsonObject.getString("title"));
 	}
 
+	@Override
+	public long insertToDb(SQLiteDatabase db) {
+		return 0;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -44,12 +49,6 @@ public class FooterData extends ViewData {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public String sqlQuery(String where) {
-		return SQLiteQueryBuilder.buildQueryString(false, TABLE_NAME,
-				new String[] { COLUMN_NAME_ID, COLUMN_NAME_TITLE }, where, null, null, COLUMN_NAME_ID
-						+ " COLLATE LOCALIZED ASC", null);
 	}
 
 	public static final Creator<FooterData> CREATOR = new Parcelable.Creator<FooterData>() {
